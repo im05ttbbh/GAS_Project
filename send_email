@@ -1,0 +1,26 @@
+function sendEmail() {
+  const spreadSheet = SpreadsheetApp.openByUrl("シートID")
+  const sheet = spreadSheet.getSheetByName("アドレス")
+
+  const lastRow = 10;
+  sheet.getLastRow();
+
+  const values = sheet.getRange(1, 1, lastRow, 4).getValues();
+  const doc = DocumentApp.openByUrl('ドキュメントID');
+  const docText = doc.getBody().getText();
+
+  const subject = 'メール一斉送信テスト'; //メールの件名
+  const senderName = {name: 'ぐーぐるたろう'}; //差出人名
+
+  for(let i = 1; i < lastRow; i++){
+    const company = values[i][0]; //会社名
+    const lastName = values[i][1]; //姓
+    const firstName = values[i][2]; //名
+    const mailAddress = values[i][3]; //アドレス
+    const body = docText
+      .replace(`{会社名}`,company)
+      .replace(`{姓}`,lastName)
+      .replace(`{名}`,firstName);
+    GmailApp.sendEmail(mailAddress, subject, body, senderName);
+  }
+}
